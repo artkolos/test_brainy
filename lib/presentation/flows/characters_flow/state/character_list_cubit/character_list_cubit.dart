@@ -19,10 +19,8 @@ class CharacterListCubit extends Cubit<CharacterListState> {
 
   final GetCharactersUseCase _getCharacters;
   final Debounce _searchDebounce = Debounce();
-  // int _requestId = 0;
 
   Future<void> getCharacters({bool refresh = false}) async {
-    // final int currentRequest = ++_requestId;
     final int page = refresh ? 1 : (state.page);
 
     if (refresh || page == 1) {
@@ -39,24 +37,11 @@ class CharacterListCubit extends Cubit<CharacterListState> {
       emit(state.copyWith(isLoadingMore: true, failure: null));
     }
 
-    final Either<AppFailure, CharacterPage> result = await _getCharacters(
-      page: page,
-      name: state.query,
-    );
-
-    // if (currentRequest != _requestId || isClosed) {
-    //   return;
-    // }
+    final Either<AppFailure, CharacterPage> result = await _getCharacters(page: page, name: state.query);
 
     result.fold(
       (AppFailure error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            isLoadingMore: false,
-            failure: error,
-          ),
-        );
+        emit(state.copyWith(isLoading: false, isLoadingMore: false, failure: error));
       },
       (CharacterPage data) {
         emit(
